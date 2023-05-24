@@ -13,20 +13,17 @@ router.post('/status', async(req, res)=>{
 
     //타겟 상태 확인
     try{
+        await db.promise().query('UPDATE embedded.score SET score = ' + score+ 'WHERE target = '+ target+ 'ORDER BY num DESC LIMIT 1; ')
+
         target_results = await db.promise().query('select status from embedded.target where id = '+target+';');
-        check_status = true
+        data['status'] = target_results[0][0]['status']
+
     }catch(err){
         console.log(err)
     }
 
-    if(check_status){
-        try{
-            await db.promise().query('UPDATE embedded.score SET score = ' + score+ 'WHERE target = '+ target+ 'ORDER BY num DESC LIMIT 1; ')
-        }catch(err){
-            console.log(err)
-        }
-        
-    }
+    res.json(data)
+
 })
 
 

@@ -5,5 +5,7 @@ module.exports = mysql.createConnection({
     user     : 'root',
     password : 'defacto8*',
     database : 'embedded'
+    // password : 'wlfkf258',
+    // database : 'embeded'
 });
 

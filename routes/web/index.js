@@ -3,7 +3,7 @@ const router = express.Router();
 const db = require('../../db/index');
 
 
-router.post('/start', async(req, res)=>{
+router.post('/login', async(req, res)=>{
     //res 형식
     data = {
         'login': false, 
