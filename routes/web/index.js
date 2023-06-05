@@ -34,16 +34,20 @@ router.post('/login', async(req, res)=>{
 
                 if(id_results[0][0] == undefined){//신규 아이디이면  user 테이블에 해당 아이디를 추가함 + 동시 접속 못하도록 접속한 아이디의 status = true로 update
                     db.query('INSERT INTO embedded.user (user.id, user.status) VALUES (\'' + id + '\', ' + 0 + ');'); //id테이블에 접속한 id와  status = False로 insert
-                }
-                
-                if(id_results[0][0]['status']){// 아이디의 status가 이미 true라면 동시접속 상태이므로 접속 제한
-                    data['login'] = false;
-                    data['error'] = '이미 접속된 id입니다.';
-                }
-                else{
                     data['login'] = true;
                     data['error'] = '';
                 }
+                else{
+                    if(id_results[0][0]['status']){// 아이디의 status가 이미 true라면 동시접속 상태이므로 접속 제한
+                        data['login'] = false;
+                        data['error'] = '이미 접속된 id입니다.';
+                    }
+                    else{
+                        data['login'] = true;
+                        data['error'] = '';
+                    }
+                }
+                
 
             }catch(err){
                 data['login'] = false;
@@ -125,7 +129,7 @@ router.post('/end',  async(req, res)=>{
             'own_rank': rank_results[0][0]['rank'],
         }
 
-        res.json(data);
+        // res.json(data);
 
     }catch(err){
         console.log(err)
@@ -137,14 +141,17 @@ router.post('/end',  async(req, res)=>{
 router.post('/rank', async(req, res)=>{
     target = parseInt(req.body.target);
 
-    rank = await db.promise().query('select num, id, target, score, row_number() over (order by score DESC)"rank" from embedded.score where target = '+target+ ' order by "rank" DESC LIMIT 10;')
+    //console.log(target)
+
+    rank = await db.promise().query('select num, id, target, score, row_number() over (order by score DESC)"rank" from embedded.score where target = '+target+ ' order by "rank" DESC LIMIT 5;')
     console.log(rank[0])
 
     ranking = []
     for(i=0; i<rank[0].length; i++){
         data ={
             'id': rank[0][i]['id'],
-            'score': rank[0][i]['score']
+            'score': rank[0][i]['score'],
+            'rank': rank[0][i]['rank']
         }
 
         ranking.push(data)
